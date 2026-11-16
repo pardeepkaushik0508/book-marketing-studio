@@ -1,0 +1,26 @@
+{
+  "name": "book-marketing-studio",
+  "version": "2.2.0",
+  "private": true,
+  "description": "Private family book-marketing web app: final copy to worldwide readers — store listings in every marketplace, localized metadata, launch automation, content calendar with auto-posting, ARC reviews, endorsements, media pitches, foreign rights, bookstores and libraries, audio and translated editions, smart links and book pages, sales analytics, bestseller tracking and backlist refresh cycles — powered by your own API keys with a built-in fallback.",
+  "license": "UNLICENSED",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node scripts/smoke-test.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "express": "^4.21.2",
+    "jszip": "^3.10.1",
+    "pdfkit": "^0.17.1",
+    "sql.js": "^1.13.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

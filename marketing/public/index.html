@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Marketing Studio</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="login-screen" class="screen hidden">
+  <div class="login-card">
+    <h1>Book Marketing Studio</h1>
+    <p class="muted">Final copy → readers worldwide. Sign in to continue.</p>
+    <form id="login-form">
+      <label>Username <input id="login-email" type="text" required autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+      <label>Password <input id="login-password" type="password" required autocomplete="current-password"></label>
+      <label id="totp-wrap" class="hidden">Two-step code <input id="login-totp" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code"></label>
+      <div id="login-error" class="error hidden"></div>
+      <button type="submit" class="btn primary">Sign in</button>
+    </form>
+    <p id="first-run-note" class="muted hidden">First run: no accounts exist yet. Create the admin account to get started.</p>
+    <form id="register-form" class="hidden">
+      <label>Your name <input id="reg-name" type="text" required></label>
+      <label>Username or email <input id="reg-email" type="text" required autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+      <label>Password (8+ characters) <input id="reg-password" type="password" required minlength="8"></label>
+      <div id="reg-error" class="error hidden"></div>
+      <button type="submit" class="btn primary">Create admin account</button>
+    </form>
+  </div>
+</div>
+
+<div id="app" class="screen hidden">
+  <header>
+    <div class="brand">Book Marketing Studio</div>
+    <nav>
+      <button data-view="dashboard" class="nav-btn active">Dashboard</button>
+      <button data-view="books" class="nav-btn">Books</button>
+      <button data-view="calendar" class="nav-btn">Calendar</button>
+      <button data-view="readers" class="nav-btn">Contacts</button>
+      <button data-view="analytics" class="nav-btn">Analytics</button>
+      <button data-view="settings" class="nav-btn" id="nav-settings">Settings</button>
+    </nav>
+    <div class="userbox">
+      <button id="bell-btn" class="btn small bell" title="Notifications">Alerts <span id="bell-count" class="count hidden">0</span></button>
+      <span id="user-name" class="muted small"></span>
+      <button id="change-pw-btn" class="btn small">Password</button>
+      <button id="logout-btn" class="btn small">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-dashboard" class="view">
+      <div id="kpis" class="kpis"></div>
+      <div class="two-col">
+        <div>
+          <h2>Today</h2>
+          <div id="today-panel" class="stack"></div>
+        </div>
+        <div>
+          <h2>Royalties by month <span class="muted small">(USD, all books)</span></h2>
+          <div id="dash-chart" class="card chart-card"></div>
+          <h2>Upload planner — KDP weekly cap</h2>
+          <p class="muted small">Verified: <strong>2 new titles per book format per week</strong> (ebook, paperback, hardcover separately). Drafts count. Resets Sunday 00:00 UTC (Saturday 5pm Calgary).</p>
+          <div id="kdp-planner" class="grid three"></div>
+          <div id="dash-jobs"></div>
+        </div>
+      </div>
+      <h2>Books by marketing stage</h2>
+      <div class="filters">
+        <select id="filter-imprint"><option value="">All imprints</option></select>
+        <select id="filter-stage"><option value="">All stages</option></select>
+      </div>
+      <div id="board" class="board"></div>
+    </section>
+
+    <section id="view-books" class="view hidden">
+      <div id="book-list-wrap">
+        <div class="row-between"><h2>Books</h2>
+          <div class="toolbar">
+            <button id="new-book-btn" class="btn primary">+ New book</button>
+            <button id="import-book-btn" class="btn">Import a book made elsewhere</button>
+          </div>
+        </div>
+        <div id="book-list" class="grid"></div>
+      </div>
+      <div id="book-detail"></div>
+    </section>
+
+    <section id="view-calendar" class="view hidden">
+      <div class="row-between"><h2>Content calendar</h2><span class="muted small">Approved content only. Connected channels post automatically; others land in Today to post by hand.</span></div>
+      <div id="calendar"></div>
+    </section>
+
+    <section id="view-readers" class="view hidden">
+      <div class="row-between"><h2>Contacts</h2>
+        <div class="toolbar">
+          <button id="add-contact-btn" class="btn primary">+ Add contact</button>
+          <button id="import-contacts-btn" class="btn">Import CSV</button>
+          <a class="btn" href="/api/contacts/export.csv">Download reader list (CSV)</a>
+        </div>
+      </div>
+      <p class="muted small">Readers, ARC readers, endorsers, media, podcasts, libraries, bookstores and rights contacts. Reader emails are owned outright; consent is recorded per contact — no consent, no email. Public signups use double opt-in.</p>
+      <div class="filters"><select id="contact-type"><option value="">All types</option></select><input id="contact-q" placeholder="Search name, email, outlet, tags"></div>
+      <div id="contact-list"></div>
+    </section>
+
+    <section id="view-analytics" class="view hidden">
+      <h2>Import sales and ads reports</h2>
+      <div class="card">
+        <p class="small">Drop in KDP, IngramSpark, Draft2Digital, Apple, Kobo or Google Play reports and Amazon Ads campaign reports — <strong>CSV or XLSX</strong>. Rows are matched to books by ASIN, ISBN or title; foreign royalties are converted to USD. Importing the same report twice replaces, never doubles. <span class="muted">(KDP has no sales API and Amazon has no rank API, so imports are the way in.)</span></p>
+        <div class="toolbar"><input type="file" id="report-file" accept=".csv,.tsv,.txt,.xlsx"><select id="report-kind"><option value="">Detect automatically</option><option value="sales">Sales / royalties</option><option value="ads">Ads campaign report</option></select><button id="report-import" class="btn primary">Import</button></div>
+        <div id="report-result"></div>
+      </div>
+      <div class="two-col">
+        <div><h2>Royalties by marketplace</h2><div id="market-chart" class="card chart-card"></div></div>
+        <div><h2>Margin by imprint</h2><div id="imprint-margins"></div></div>
+      </div>
+    </section>
+
+    <section id="view-settings" class="view hidden">
+      <div class="settings-nav" id="settings-nav"></div>
+      <div id="settings-body"></div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modal-card" id="modal-card" role="dialog" aria-modal="true"></div></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
